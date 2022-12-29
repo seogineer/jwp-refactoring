@@ -13,12 +13,6 @@ import org.springframework.util.CollectionUtils;
 
 @Component
 public class TableGroupValidator {
-    private final OrderStatusValidator orderStatusValidator;
-
-    public TableGroupValidator(OrderStatusValidator orderStatusValidator) {
-        this.orderStatusValidator = orderStatusValidator;
-    }
-
     public void validateCreate(List<Long> orderTableIds, List<OrderTable> orderTables) {
         validateOrderTablesSize(orderTables);
         validateOrderTablesEmpty(orderTables);
@@ -51,9 +45,5 @@ public class TableGroupValidator {
         if (orderTableIds.size() != savedOrderTables.size()) {
             throw new KitchenposException(NOT_SAME_BETWEEN_ORDER_TABLES_COUNT_AND_SAVED_ORDER_TABLES);
         }
-    }
-
-    public void existsByCookingAndMeal(List<Long> orderTableIds){
-        orderStatusValidator.existsByOrderTableIdInAndOrderStatusIn(orderTableIds);
     }
 }

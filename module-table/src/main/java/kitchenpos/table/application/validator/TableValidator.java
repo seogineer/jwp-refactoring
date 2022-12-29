@@ -13,25 +13,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TableValidator {
-    private final OrderStatusValidator orderStatusValidator;
-
-    public TableValidator(OrderStatusValidator orderStatusValidator) {
-        this.orderStatusValidator = orderStatusValidator;
-    }
-
     public void validateChangeEmpty(OrderTable orderTable) {
         isNullTableGroup(orderTable.getTableGroup());
-        existsCookingOrMeal(orderTable.getId());
     }
 
     private void isNullTableGroup(TableGroup tableGroup) {
         if (Objects.nonNull(tableGroup)) {
             throw new KitchenposException(NOT_BEEN_UNGROUP);
         }
-    }
-
-    private void existsCookingOrMeal(Long orderTableId) {
-        orderStatusValidator.existsByOrderTableIdAndOrderStatusIn(orderTableId);
     }
 
     public void validateNumberOfGuests(int numberOfGuests) {

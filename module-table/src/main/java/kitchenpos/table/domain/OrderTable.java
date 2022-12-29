@@ -6,9 +6,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import kitchenpos.table.event.ValidateChangeEmptyEventPublisher;
+import kitchenpos.table.event.ValidateUnGroupEventPublisher;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 @Entity
-public class OrderTable {
+public class OrderTable extends AbstractAggregateRoot<OrderTable> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -55,10 +58,12 @@ public class OrderTable {
     }
 
     public void ungroup() {
+        registerEvent(new ValidateUnGroupEventPublisher(this));
         this.tableGroup = null;
     }
 
     public void changeEmpty(boolean empty) {
+        registerEvent(new ValidateChangeEmptyEventPublisher(this));
         this.empty = empty;
     }
 }

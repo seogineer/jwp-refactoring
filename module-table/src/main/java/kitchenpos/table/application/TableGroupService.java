@@ -40,7 +40,6 @@ public class TableGroupService {
 
     public void ungroup(final Long tableGroupId) {
         final OrderTables orderTables = OrderTables.of(orderTableRepository.findAllByTableGroupId(tableGroupId));
-        tableGroupValidator.existsByCookingAndMeal(orderTables.getOrderTableIds());
         orderTables.ungroup();
     }
 }

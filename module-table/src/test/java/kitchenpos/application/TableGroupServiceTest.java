@@ -19,11 +19,13 @@ import kitchenpos.common.exception.KitchenposException;
 import kitchenpos.table.application.TableGroupService;
 import kitchenpos.table.application.validator.TableGroupValidator;
 import kitchenpos.table.domain.OrderTable;
+import kitchenpos.table.domain.OrderTables;
 import kitchenpos.table.domain.TableGroup;
 import kitchenpos.table.dto.request.TableGroupRequest;
 import kitchenpos.table.dto.response.TableGroupResponse;
 import kitchenpos.table.domain.OrderTableRepository;
 import kitchenpos.table.domain.TableGroupRepository;
+import kitchenpos.table.event.ValidateUnGroupEventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +37,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class TableGroupServiceTest {
     @Mock
     private TableGroupValidator tableGroupValidator;
+    @Mock
+    private OrderTables orderTables;
     @Mock
     private OrderTableRepository orderTableRepository;
     @Mock
@@ -121,7 +125,6 @@ class TableGroupServiceTest {
     @Test
     void 좌석_그룹_해제() {
         given(orderTableRepository.findAllByTableGroupId(anyLong())).willReturn(Arrays.asList(주문_좌석_3, 주문_좌석_4));
-        doNothing().when(tableGroupValidator).existsByCookingAndMeal(anyList());
 
         tableGroupService.ungroup(생성된_좌석_그룹_2.getId());
 
@@ -129,18 +132,5 @@ class TableGroupServiceTest {
                 () -> assertThat(주문_좌석_3.getTableGroup()).isNull(),
                 () -> assertThat(주문_좌석_4.getTableGroup()).isNull()
         );
-    }
-
-    @Test
-    void 좌석_상태가_COMPLETION_상태가_아닌_경우() {
-        given(orderTableRepository.findAllByTableGroupId(anyLong())).willReturn(Arrays.asList(주문_좌석_3, 주문_좌석_4));
-        doThrow(new KitchenposException(EXISTS_NOT_COMPLETION_STATUS))
-                .when(tableGroupValidator).existsByCookingAndMeal(anyList());
-
-        assertThatThrownBy(
-                () -> tableGroupService.ungroup(생성된_좌석_그룹_2.getId())
-        )
-                .isInstanceOf(KitchenposException.class)
-                .hasMessageContaining(EXISTS_NOT_COMPLETION_STATUS.getDetail());
     }
 }
